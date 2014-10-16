@@ -1,0 +1,13 @@
+{% extends 'main/base.html' %}
+
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+
+{% block title %}Index{% endblock %}
+
+{% block content %}
+
+	{% include "main/language_select.html" %}
+    <h1>{% trans "It works!" %}</h1>
+
+{% endblock %}

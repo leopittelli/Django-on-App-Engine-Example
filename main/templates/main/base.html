@@ -1,0 +1,52 @@
+{% load staticfiles %}
+{% load url from future %}
+{% load i18n %}
+{% load solo_tags %}
+{% get_current_language as LANGUAGE_CODE %}
+
+{% get_config 'config.SiteConfiguration' as config %}
+
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+        <title>{% block title %}{% endblock %}</title>
+        <meta name="description" content="{% block description %}{% endblock %}">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+        <link rel="icon" type="image/png" href="{% static 'global/favicon.ico' %}">
+
+        {% block css %}
+        {% endblock %}
+
+        <link rel="stylesheet" href="{% static 'global/css/app.css' %}">
+
+        <script src="{% static 'vendor/modernizr-2.6.2-respond-1.1.0.min.js' %}"></script>
+
+        {% block preload_js %}
+        {% endblock %}
+    </head>
+
+    <body class="{% block body_css_class %}{% endblock %}">
+
+        {% block content %}
+        {% endblock %}
+
+        {{ config.analytics_code|safe }}
+
+        <!-- // Google apis
+        <script type="text/javascript" src="https://apis.google.com/js/platform.js">
+            {lang: '{{ LANGUAGE_CODE }}', parsetags: 'explicit'}
+        </script> -->
+
+        <script src="{% static 'vendor/jquery-1.11.0.min.js' %}"></script>
+
+        {% block js %}
+        {% endblock %}
+    </body>
+</html>

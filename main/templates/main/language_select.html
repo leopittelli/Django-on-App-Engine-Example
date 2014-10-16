@@ -1,0 +1,26 @@
+<ul>
+	<li class="{% if LANGUAGE_CODE == 'en' %}active-lang{% endif %}">
+		<form class="setLangEnglish" action="/i18n/setlang/" method="POST">{% csrf_token %}
+			<input type="hidden" name="language" value="en" />
+			<a href="#" onclick="$('.setLangEnglish').first().submit();return false;" title="English">
+				En
+			</a>
+		</form>
+	</li>
+	<li class="{% if LANGUAGE_CODE == 'pt' %}active-lang{% endif %}">
+		<form class="setLangPortuguese" action="/i18n/setlang/" method="POST">{% csrf_token %}
+			<input type="hidden" name="language" value="pt" />
+			<a href="#" onclick="$('.setLangPortuguese').first().submit();return false;" title="Portuguese">
+				Pt
+			</a>
+		</form>
+	</li>
+	<li class="{% if LANGUAGE_CODE == 'es' %}active-lang{% endif %}">
+		<form class="setLangSpanish" action="/i18n/setlang/" method="POST">{% csrf_token %}
+			<input type="hidden" name="language" value="es" />
+			<a href="#" onclick="$('.setLangSpanish').first().submit();return false;" title="Espa&ntilde;ol">
+				Es
+			</a>
+		</form>
+	</li>
+</ul>
