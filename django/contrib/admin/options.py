@@ -327,6 +327,40 @@ class BaseModelAdmin(six.with_metaclass(RenameBaseModelAdminMethods)):
         clean_lookup = LOOKUP_SEP.join(parts)
         return clean_lookup in self.list_filter or clean_lookup == self.date_hierarchy
 
+    def to_field_allowed(self, request, to_field):
+        """
+        Returns True if the model associated with this admin should be
+        allowed to be referenced by the specified field.
+        """
+        opts = self.model._meta
+
+        try:
+            field = opts.get_field(to_field)
+        except FieldDoesNotExist:
+            return False
+
+        # Check whether this model is the origin of a M2M relationship
+        # in which case to_field has to be the pk on this model.
+        if opts.many_to_many and field.primary_key:
+            return True
+
+        # Make sure at least one of the models registered for this site
+        # references this field through a FK or a M2M relationship.
+        registered_models = set()
+        for model, admin in self.admin_site._registry.items():
+            registered_models.add(model)
+            for inline in admin.inlines:
+                registered_models.add(inline.model)
+
+        for related_object in (opts.get_all_related_objects(include_hidden=True) +
+                               opts.get_all_related_many_to_many_objects()):
+            related_model = related_object.model
+            if (any(issubclass(model, related_model) for model in registered_models) and
+                    related_object.field.rel.get_related_field() == field):
+                return True
+
+        return False
+
     def has_add_permission(self, request):
         """
         Returns True if the given request has permission to add an object.
@@ -1547,9 +1581,9 @@ class InlineModelAdmin(BaseModelAdmin):
     """
     Options for inline editing of ``model`` instances.
 
-    Provide ``name`` to specify the attribute name of the ``ForeignKey`` from
-    ``model`` to its parent. This is required if ``model`` has more than one
-    ``ForeignKey`` to its parent.
+    Provide ``fk_name`` to specify the attribute name of the ``ForeignKey``
+    from ``model`` to its parent. This is required if ``model`` has more than
+    one ``ForeignKey`` to its parent.
     """
     model = None
     fk_name = None
@@ -1607,8 +1641,8 @@ class InlineModelAdmin(BaseModelAdmin):
             # Take the custom ModelForm's Meta.exclude into account only if the
             # InlineModelAdmin doesn't define its own.
             exclude.extend(self.form._meta.exclude)
-        # if exclude is an empty list we use None, since that's the actual
-        # default
+        # If exclude is an empty list we use None, since that's the actual
+        # default.
         exclude = exclude or None
         can_delete = self.can_delete and self.has_delete_permission(request, obj)
         defaults = {
