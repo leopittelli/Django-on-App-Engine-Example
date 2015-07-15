@@ -152,7 +152,7 @@ class BaseMemcachedCache(BaseCache):
 class MemcachedCache(BaseMemcachedCache):
     "An implementation of a cache binding using python-memcached"
     def __init__(self, server, params):
-        import memcache
+        from google.appengine.api import memcache
         super(MemcachedCache, self).__init__(server, params,
                                              library=memcache,
                                              value_not_found_exception=ValueError)
